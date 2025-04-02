@@ -1,4 +1,5 @@
-import { FileEntry, formatFileSize } from './fileUtils';
+import { formatFileSize } from './fileUtils';
+import type { FileEntry } from './fileUtils';
 import { join } from 'path';
 
 /**
@@ -13,7 +14,7 @@ function generateBreadcrumbs(path: string): string {
   let currentPath = '';
   for (const part of parts) {
     currentPath += `/${part}`;
-    breadcrumbs += ` / <a href="${currentPath}">${part}</a>`;
+    breadcrumbs += ` / <a href="${currentPath}/">${part}</a>`;
   }
 
   return breadcrumbs + '</div>';
@@ -109,6 +110,7 @@ export function renderDirectoryListing(
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Directory: ${currentPath}</title>
+      <link rel="icon" href="/public/favicon.ico" type="image/x-icon">
       <link rel="stylesheet" href="/public/css/style.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       <script>

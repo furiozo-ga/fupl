@@ -5,8 +5,8 @@ import { renderDirectoryListing } from './templates';
 
 // Configuration
 const PORT = process.env.PORT || 3000;
-const ROOT_DIR = process.env.ROOT_DIR || './'; // Default to current directory
-const ABSOLUTE_ROOT_DIR = resolve(ROOT_DIR);
+const ROOT = process.env.ROOT || join(import.meta.dir, '..', 'upload'); // Default to upload/ subdirectory
+const ABSOLUTE_ROOT_DIR = resolve(ROOT);
 
 serve({
   port: PORT,

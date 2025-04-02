@@ -121,48 +121,67 @@ tr:hover {
   width: 24px;
 }
 
+/* Font Awesome icons */
 .icon-folder::before {
-  content: '📁';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f07b';
   color: #ffc107;
 }
 
 .icon-file::before {
-  content: '📄';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f15b';
   color: #6c757d;
 }
 
 .icon-image::before {
-  content: '🖼️';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f03e';
   color: #28a745;
 }
 
 .icon-pdf::before {
-  content: '📕';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f1c1';
   color: #dc3545;
 }
 
 .icon-document::before {
-  content: '📝';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f15c';
   color: #007bff;
 }
 
 .icon-text::before {
-  content: '📃';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f15c';
   color: #6c757d;
 }
 
 .icon-code::before {
-  content: '💻';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f1c9';
   color: #17a2b8;
 }
 
 .icon-archive::before {
-  content: '🗄️';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f1c6';
   color: #6610f2;
 }
 
 .icon-markdown::before {
-  content: '📑';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: '\f15c';
   color: #6f42c1;
 }
 

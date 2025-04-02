@@ -1,5 +1,5 @@
-import { join, relative, resolve, normalize } from 'path';
-import { readdir, stat } from 'fs/promises';
+import { join, normalize } from 'path';
+import { readdir, stat, access, constants, chmod } from 'fs/promises';
 
 // File entry interface
 export interface FileEntry {
@@ -9,6 +9,8 @@ export interface FileEntry {
   size: number;
   mtime: Date;
   type: string;
+  isPublic?: boolean;
+  isWritable?: boolean;
 }
 
 /**
@@ -60,7 +62,6 @@ export async function readDirectory(dirPath: string): Promise<FileEntry[]> {
     const entries = await readdir(dirPath);
 
     // Add parent directory entry if not at root
-    const result: FileEntry[] = [];
 
     // Process each entry
     const entryPromises = entries.map(async (name) => {
@@ -68,6 +69,10 @@ export async function readDirectory(dirPath: string): Promise<FileEntry[]> {
       const stats = await stat(path);
 
       const isDir = stats.isDirectory();
+      // Check public permissions for both files and directories
+      const isPublic = await isPubliclyReadable(path);
+      const isWritable = await isPubliclyWritable(path);
+
       return {
         name,
         path: path,
@@ -75,6 +80,8 @@ export async function readDirectory(dirPath: string): Promise<FileEntry[]> {
         size: stats.size,
         mtime: stats.mtime,
         type: isDir ? 'directory' : getMimeType(name),
+        isPublic: isPublic,
+        isWritable: isWritable,
       };
     });
 
@@ -104,4 +111,121 @@ export function formatFileSize(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
+/**
+ * Check if a file or directory is publicly readable
+ * @param filePath Path to the file or directory
+ * @returns Promise<boolean> True if the file or directory is publicly readable
+ */
+export async function isPubliclyReadable(filePath: string): Promise<boolean> {
+  try {
+    // Check if the file is readable by others (public)
+    // We use the access function with the constants.R_OK flag
+    // This checks if the file is readable by the current process
+    // In a production environment, you would want to check the actual file permissions
+    // using something like fs.stat and checking the mode bits
+    await access(filePath, constants.R_OK);
+
+    // For a more accurate check in a real-world scenario, you could do:
+    const fileStats = await stat(filePath);
+    const mode = fileStats.mode;
+
+    // Check if the file is readable by others (last digit has read permission)
+    // 0o4 is the read permission bit for "others"
+    const isPublic = (mode & 0o4) === 0o4;
+
+    return isPublic;
+  } catch (error) {
+    // If there's an error accessing the file, it's not publicly readable
+    return false;
+  }
+}
+
+/**
+ * Check if a file or directory is publicly writable
+ * @param filePath Path to the file or directory
+ * @returns Promise<boolean> True if the file or directory is publicly writable
+ */
+export async function isPubliclyWritable(filePath: string): Promise<boolean> {
+  try {
+    // Check if the file is writable by others (public)
+    // We use the access function with the constants.W_OK flag
+    await access(filePath, constants.W_OK);
+
+    // For a more accurate check in a real-world scenario:
+    const fileStats = await stat(filePath);
+    const mode = fileStats.mode;
+
+    // Check if the file is writable by others (last digit has write permission)
+    // 0o2 is the write permission bit for "others"
+    const isWritable = (mode & 0o2) === 0o2;
+
+    return isWritable;
+  } catch (error) {
+    // If there's an error accessing the file, it's not publicly writable
+    return false;
+  }
+}
+
+/**
+ * Set or remove public readable permission for a file
+ * @param filePath Path to the file
+ * @param isPublic Whether the file should be publicly readable
+ * @returns Promise<boolean> True if the operation was successful
+ */
+export async function setPublicReadable(filePath: string, isPublic: boolean): Promise<boolean> {
+  try {
+    // Get current file stats to get the current mode
+    const fileStats = await stat(filePath);
+    let mode = fileStats.mode;
+
+    if (isPublic) {
+      // Add read permission for others (0o4)
+      // We preserve all other permissions and just add the read bit for others
+      mode |= 0o4;
+    } else {
+      // Remove read permission for others
+      // We preserve all other permissions and just remove the read bit for others
+      mode &= ~0o4;
+    }
+
+    // Apply the new permissions
+    await chmod(filePath, mode);
+    return true;
+  } catch (error) {
+    console.error('Error changing file permissions:', error);
+    return false;
+  }
+}
+
+/**
+ * Set or remove public writable permission for a file
+ * @param filePath Path to the file
+ * @param isWritable Whether the file should be publicly writable
+ * @returns Promise<boolean> True if the operation was successful
+ */
+export async function setPublicWritable(filePath: string, isWritable: boolean): Promise<boolean> {
+  try {
+    // Get current file stats to get the current mode
+    const fileStats = await stat(filePath);
+    let mode = fileStats.mode;
+
+    if (isWritable) {
+      // Add write permission for others (0o2)
+      // We preserve all other permissions and just add the write bit for others
+      mode |= 0o2;
+    } else {
+      // Remove write permission for others
+      // We preserve all other permissions and just remove the write bit for others
+      mode &= ~0o2;
+    }
+
+    // Apply the new permissions
+    await chmod(filePath, mode);
+    return true;
+  } catch (error) {
+    console.error('Error changing file write permissions:', error);
+    return false;
+  }
 }

@@ -61,12 +61,11 @@ This project aims to create a simple web application using Bun.js that provides 
 1. Implement proper error handling
 2. Add security measures to prevent directory traversal attacks
 3. Add configuration options for root directory path
+4. Implement basic authentication with hardcoded credentials (username: "a", password: "a")
+5. Allow public access to files based on file system permissions (publicly readable files can be accessed without login)
+6. Implement redirect to originally requested file after successful login
+7. Add ability to change public readable/writable flags on filesystem permissions with well-styled checkboxes
 
-### Phase 5: Testing and Refinement
-
-1. Test the application with different directory structures
-2. Fix bugs and improve performance
-3. Add additional features if needed
 
 ## 5. Features
 
@@ -93,6 +92,17 @@ This project aims to create a simple web application using Bun.js that provides 
 - Set up route handling for directory requests
 - Implement security measures to restrict access to the specified root directory
 
+### Authentication
+
+- Implement basic authentication with hardcoded credentials (username: "a", password: "a")
+- Use cookies for session management
+- Protect directory browsing routes with authentication
+- Create a login page for users to authenticate
+- Allow public access to files based on file system permissions
+- Files/directories that are publicly readable can be accessed without login
+- Redirect to originally requested file after successful login
+- When a user attempts to access a private file, save the URL and redirect after authentication
+
 ### Directory Browsing
 
 - Read directory contents using Bun's file system APIs
@@ -107,4 +117,5 @@ This project aims to create a simple web application using Bun.js that provides 
 - Implement breadcrumb navigation for easy traversal
 - Add basic sorting functionality
 - Implement dark/light theme toggle with user preference storage
+- Add well-styled checkboxes to toggle public readable/writable permissions for files
 

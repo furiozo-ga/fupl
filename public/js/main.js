@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add cursor pointer and sort indicator
         header.style.cursor = 'pointer';
-        header.setAttribute('title', 'Click to sort');
+        // header.setAttribute('title', 'Click to sort');
       }
     });
   }
